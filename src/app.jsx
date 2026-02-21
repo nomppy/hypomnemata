@@ -228,8 +228,9 @@ export function App() {
 
   const handleDelete = async (id, remoteId) => {
     removeFromIndex(id)
+    setShowForm(false)
     setEditingEntry(null)
-    loadEntries()
+    await loadEntries()
     // Fire-and-forget remote delete
     if (user && remoteId) {
       deleteRemoteEntry(remoteId).catch(() => {})
