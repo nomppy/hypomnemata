@@ -30,8 +30,8 @@ export function AuthProvider({ children }) {
     return supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin + '/hypomnemata/#/settings'
-      }
+        emailRedirectTo: window.location.origin + '/#/settings',
+      },
     })
   }, [])
 

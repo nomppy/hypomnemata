@@ -11,6 +11,12 @@ export function getSupabase() {
     _client = createClient(
       import.meta.env.VITE_SUPABASE_URL,
       import.meta.env.VITE_SUPABASE_ANON_KEY,
+      {
+        auth: {
+          flowType: 'implicit',
+          detectSessionInUrl: true,
+        },
+      },
     )
   }
   return _client
