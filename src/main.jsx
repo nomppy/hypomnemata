@@ -1,0 +1,16 @@
+import '@fontsource/cormorant-garamond/400.css'
+import '@fontsource/cormorant-garamond/400-italic.css'
+import '@fontsource/cormorant-garamond/600.css'
+import '@fontsource/cormorant-garamond/600-italic.css'
+import '@fontsource/cormorant-garamond/700.css'
+import '@fontsource/crimson-text/400.css'
+import '@fontsource/crimson-text/400-italic.css'
+import '@fontsource/crimson-text/600.css'
+import '@fontsource/ibm-plex-mono/400.css'
+import '@fontsource/ibm-plex-mono/500.css'
+import './styles/global.css'
+import './styles/components.css'
+import { render } from 'preact'
+import { App } from './app.jsx'
+
+render(<App />, document.getElementById('app'))

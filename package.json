@@ -1,0 +1,25 @@
+{
+  "name": "hypo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.2.11",
+    "@fontsource/crimson-text": "^5.2.7",
+    "@fontsource/ibm-plex-mono": "^5.2.7",
+    "dexie": "^4.3.0",
+    "minisearch": "^7.2.0",
+    "preact": "^10.27.2",
+    "vite-plugin-pwa": "^1.2.0"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.2",
+    "playwright": "^1.58.2",
+    "vite": "^7.3.1"
+  }
+}
