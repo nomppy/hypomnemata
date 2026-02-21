@@ -19,8 +19,11 @@ export async function updateEntry(id, changes) {
 }
 
 export async function deleteEntry(id) {
+  const entry = await db.entries.get(id)
+  const remoteId = entry?.remoteId || null
   await db.entries.delete(id)
   await db.embeddings.delete(id).catch(() => {})
+  return remoteId
 }
 
 export async function getEntry(id) {
@@ -85,6 +88,14 @@ export async function importData(json) {
   await db.entries.clear()
   await db.entries.bulkAdd(data.entries)
   return data.entries.length
+}
+
+export async function getEntryByRemoteId(remoteId) {
+  return db.entries.where('remoteId').equals(remoteId).first()
+}
+
+export async function updateRemoteId(id, remoteId) {
+  return db.entries.update(id, { remoteId })
 }
 
 export async function clearAllData() {

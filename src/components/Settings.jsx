@@ -1,10 +1,13 @@
 import { useState, useRef } from 'preact/hooks'
 import { exportData, importData, clearAllData } from '../db/operations.js'
+import { AuthSection } from './AuthSection.jsx'
+import { useAuth } from '../auth/context.jsx'
 
 export function Settings({ onDataChange }) {
   const [message, setMessage] = useState('')
   const [showClearConfirm, setShowClearConfirm] = useState(false)
   const fileRef = useRef(null)
+  const { user } = useAuth()
 
   const handleExport = async () => {
     const json = await exportData()
@@ -48,6 +51,8 @@ export function Settings({ onDataChange }) {
       <h2>Settings</h2>
       <div class="divider" />
 
+      <AuthSection />
+
       <div class="settings-section">
         <h3>Export Data</h3>
         <p>Download all entries as a JSON file.</p>
@@ -69,6 +74,7 @@ export function Settings({ onDataChange }) {
       <div class="settings-section">
         <h3>Clear All Data</h3>
         <p>Permanently delete all entries. This cannot be undone.</p>
+        {user && <p style={{ color: 'var(--accent-red)', fontSize: '0.8rem' }}>This only clears local data. Synced entries will reappear on next sync. Sign out first to fully disconnect.</p>}
         <button
           class="danger"
           onClick={handleClear}

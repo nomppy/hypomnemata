@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
-import { getAllEntries, getEntriesByTag } from './db/operations.js'
+import { getAllEntries, getEntriesByTag, getEntry } from './db/operations.js'
 import { initSearch, search, addToIndex, removeFromIndex, updateInIndex } from './search/text.js'
 import { EntryCard } from './components/EntryCard.jsx'
 import { EntryForm } from './components/EntryForm.jsx'
@@ -9,6 +9,10 @@ import { Meditate } from './components/Meditate.jsx'
 import { Settings } from './components/Settings.jsx'
 import { KeyboardHelp } from './components/KeyboardHelp.jsx'
 import { About } from './components/About.jsx'
+import { SyncIndicator } from './components/SyncIndicator.jsx'
+import { useAuth } from './auth/context.jsx'
+import { syncAll, pushEntry, deleteRemoteEntry } from './sync/engine.js'
+import { useSyncStatus } from './sync/status.js'
 
 function getRoute() {
   return window.location.hash.slice(1) || '/'
@@ -28,6 +32,21 @@ export function App() {
   const pendingFilterTag = useRef(null)
   const searchRef = useRef(null)
 
+  const { user } = useAuth()
+  const syncStatus = useSyncStatus()
+
+  const runSync = useCallback(async () => {
+    if (!user) return
+    if (!navigator.onLine) { syncStatus.setOffline(); return }
+    syncStatus.setSyncing()
+    try {
+      await syncAll(user.id)
+      syncStatus.setSynced()
+    } catch (err) {
+      syncStatus.setErrorStatus(err.message)
+    }
+  }, [user])
+
   const loadEntries = useCallback(async () => {
     let data
     if (filterTag) {
@@ -44,6 +63,19 @@ export function App() {
   useEffect(() => {
     loadEntries()
   }, [loadEntries])
+
+  // Sync on sign-in and on coming back online, then reload entries
+  useEffect(() => {
+    if (!user) return
+    const doSync = async () => {
+      await runSync()
+      loadEntries()
+    }
+    doSync()
+    const handleOnline = () => doSync()
+    window.addEventListener('online', handleOnline)
+    return () => window.removeEventListener('online', handleOnline)
+  }, [user, runSync, loadEntries])
 
   useEffect(() => {
     const onHash = () => {
@@ -178,7 +210,7 @@ export function App() {
     setSearchResults(new Set(ids))
   }
 
-  const handleSave = (entry) => {
+  const handleSave = async (entry) => {
     if (editingEntry) {
       updateInIndex(entry)
     } else {
@@ -186,13 +218,22 @@ export function App() {
     }
     setShowForm(false)
     setEditingEntry(null)
-    loadEntries()
+    await loadEntries()
+    // Fire-and-forget remote push
+    if (user) {
+      const fresh = await getEntry(entry.id)
+      if (fresh) pushEntry(fresh, user.id).catch(() => {})
+    }
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id, remoteId) => {
     removeFromIndex(id)
     setEditingEntry(null)
     loadEntries()
+    // Fire-and-forget remote delete
+    if (user && remoteId) {
+      deleteRemoteEntry(remoteId).catch(() => {})
+    }
   }
 
   const handleEdit = (entry) => {
@@ -222,6 +263,7 @@ export function App() {
       <header class="app-header">
         <h1>
           <a href="#/" style={{ color: 'inherit', textDecoration: 'none' }}>Hypomnēmata</a>
+          <SyncIndicator syncStatus={syncStatus} />
         </h1>
         <nav>
           {navItems.map((item) => (

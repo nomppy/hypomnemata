@@ -63,8 +63,8 @@ export function EntryForm({ entry, onSave, onCancel, onDelete }) {
       setShowDeleteConfirm(true)
       return
     }
-    await deleteEntry(entry.id)
-    onDelete(entry.id)
+    const remoteId = await deleteEntry(entry.id)
+    onDelete(entry.id, remoteId)
   }
 
   const tags = parseTags(text)

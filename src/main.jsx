@@ -12,5 +12,11 @@ import './styles/global.css'
 import './styles/components.css'
 import { render } from 'preact'
 import { App } from './app.jsx'
+import { AuthProvider } from './auth/context.jsx'
 
-render(<App />, document.getElementById('app'))
+render(
+  <AuthProvider>
+    <App />
+  </AuthProvider>,
+  document.getElementById('app'),
+)

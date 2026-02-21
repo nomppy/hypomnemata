@@ -489,6 +489,77 @@ kbd {
   display: inline-block;
 }
 
+/* Auth Section */
+.auth-section {
+  margin-bottom: 2rem;
+}
+
+.auth-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.auth-form input[type="email"] {
+  flex: 1;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.6rem;
+}
+
+.auth-error {
+  color: var(--accent-red);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.auth-loading {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Sync Indicator */
+.sync-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  margin-left: 0.6rem;
+  vertical-align: middle;
+  font-weight: 400;
+}
+
+.sync-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+}
+
+.sync-syncing .sync-dot {
+  background: var(--accent-slate);
+  animation: pulse 1s infinite;
+}
+
+.sync-synced .sync-dot {
+  background: #5a9a68;
+}
+
+.sync-offline .sync-dot {
+  background: var(--text-secondary);
+}
+
+.sync-error .sync-dot {
+  background: var(--accent-red);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
 /* About */
 .about {
   max-width: 540px;
