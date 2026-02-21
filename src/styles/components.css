@@ -560,6 +560,45 @@ kbd {
   50% { opacity: 0.4; }
 }
 
+/* Sync Hint Banner */
+.sync-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  background: rgba(94, 109, 120, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.4rem 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.sync-hint a {
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sync-hint a:hover {
+  color: var(--text-primary);
+}
+
+.sync-hint-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  line-height: 1;
+}
+
+.sync-hint-dismiss:hover {
+  color: var(--text-primary);
+}
+
 /* About */
 .about {
   max-width: 540px;

@@ -32,7 +32,15 @@ export function App() {
   const pendingFilterTag = useRef(null)
   const searchRef = useRef(null)
 
-  const { user } = useAuth()
+  const { user, configured } = useAuth()
+  const [syncHintDismissed, setSyncHintDismissed] = useState(
+    () => localStorage.getItem('hypo:sync-hint-dismissed') === '1',
+  )
+  const showSyncHint = configured && !user && !syncHintDismissed
+  const dismissSyncHint = () => {
+    localStorage.setItem('hypo:sync-hint-dismissed', '1')
+    setSyncHintDismissed(true)
+  }
   const syncStatus = useSyncStatus()
 
   const runSync = useCallback(async () => {
@@ -280,6 +288,13 @@ export function App() {
       </header>
 
       <div class="divider" />
+
+      {showSyncHint && (
+        <div class="sync-hint">
+          <a href="#/settings">Sign in to sync entries across devices</a>
+          <button class="sync-hint-dismiss" onClick={dismissSyncHint} aria-label="Dismiss">&times;</button>
+        </div>
+      )}
 
       {route === '/' && (
         <div>
