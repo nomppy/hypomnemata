@@ -219,7 +219,7 @@ export function App() {
     <div>
       <header class="app-header">
         <h1>
-          <a href="#/" style={{ color: 'inherit', textDecoration: 'none' }}>Hypo</a>
+          <a href="#/" style={{ color: 'inherit', textDecoration: 'none' }}>Hypomnēmata</a>
         </h1>
         <nav>
           {navItems.map((item) => (

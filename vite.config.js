@@ -3,14 +3,14 @@ import preact from '@preact/preset-vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/hypo/',
+  base: '/hypomnemata/',
   plugins: [
     preact(),
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Hypo — Hypomnemata',
-        short_name: 'Hypo',
+        name: 'Hypomnēmata',
+        short_name: 'Hypomnēmata',
         description: 'A tool for collecting quotes, extracts, reflections, and principles.',
         theme_color: '#F5F1E6',
         background_color: '#F5F1E6',

@@ -1,11 +1,11 @@
-# Hypo — Hypomnemata App
+# Hypomnēmata
 
 A tool for the ancient practice of collecting quotes, extracts, reflections, and principles. Fully offline, statically hosted.
 
 ## Commands
 
 ```bash
-npm run dev       # Start dev server (http://localhost:5173/hypo/)
+npm run dev       # Start dev server (http://localhost:5173/hypomnemata/)
 npm run build     # Build for production (output in dist/)
 npm run preview   # Preview production build
 node test.mjs     # Run browser tests (requires dev server running)
@@ -33,6 +33,7 @@ src/
     TagList.jsx         — tag management view
     Meditate.jsx        — random entry resurfacing
     Settings.jsx        — export/import, clear data
+    KeyboardHelp.jsx    — keyboard shortcuts overlay
   db/
     index.js            — Dexie schema
     operations.js       — CRUD helpers
@@ -49,4 +50,4 @@ src/
 
 ## Deployment
 
-Built for GitHub Pages with base path `/hypo/`. Deploy the `dist/` folder.
+Built for GitHub Pages with base path `/hypomnemata/`. Deployed via GitHub Actions.

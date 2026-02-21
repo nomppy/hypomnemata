@@ -19,7 +19,7 @@ function assert(condition, msg) {
 try {
   // Load app and clear data from previous runs via settings
   console.log('\n--- Loading app ---')
-  await page.goto('http://localhost:5173/hypo/#/settings')
+  await page.goto('http://localhost:5173/hypomnemata/#/settings')
   await page.waitForSelector('.app-header')
   await page.waitForTimeout(300)
   const clearBtn = await page.$('button:text("Clear all data")')
@@ -30,7 +30,7 @@ try {
     if (confirmBtn) await confirmBtn.click()
     await page.waitForTimeout(300)
   }
-  await page.goto('http://localhost:5173/hypo/')
+  await page.goto('http://localhost:5173/hypomnemata/')
   await page.waitForSelector('.app-header')
   assert(true, 'App loads with header')
 
@@ -217,7 +217,7 @@ try {
   })
   console.log('  Entries in IndexedDB before reload:', countBefore)
 
-  await page.goto('http://localhost:5173/hypo/#/')
+  await page.goto('http://localhost:5173/hypomnemata/#/')
   await page.waitForSelector('.app-header')
   await page.waitForTimeout(1000)
   const cardsAfterReload = await page.$$('.entry-card')
