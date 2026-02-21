@@ -8,6 +8,7 @@ import { TagList } from './components/TagList.jsx'
 import { Meditate } from './components/Meditate.jsx'
 import { Settings } from './components/Settings.jsx'
 import { KeyboardHelp } from './components/KeyboardHelp.jsx'
+import { About } from './components/About.jsx'
 
 function getRoute() {
   return window.location.hash.slice(1) || '/'
@@ -121,9 +122,9 @@ export function App() {
       }
 
       // Navigate tabs: 1-4
-      const navRoutes = ['/', '/tags', '/meditate', '/settings']
+      const navRoutes = ['/', '/tags', '/meditate', '/settings', '/about']
       const num = parseInt(e.key)
-      if (num >= 1 && num <= 4 && !e.metaKey && !e.ctrlKey) {
+      if (num >= 1 && num <= 5 && !e.metaKey && !e.ctrlKey) {
         e.preventDefault()
         window.location.hash = '#' + navRoutes[num - 1]
         return
@@ -213,6 +214,7 @@ export function App() {
     { path: '/tags', label: 'tags', key: '2' },
     { path: '/meditate', label: 'meditate', key: '3' },
     { path: '/settings', label: 'settings', key: '4' },
+    { path: '/about', label: 'about', key: '5' },
   ]
 
   return (
@@ -297,6 +299,8 @@ export function App() {
       {route === '/meditate' && <Meditate />}
 
       {route === '/settings' && <Settings onDataChange={loadEntries} />}
+
+      {route === '/about' && <About />}
 
       {showHelp && <KeyboardHelp onClose={() => setShowHelp(false)} />}
     </div>

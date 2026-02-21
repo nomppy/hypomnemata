@@ -488,3 +488,50 @@ kbd {
   text-align: center;
   display: inline-block;
 }
+
+/* About */
+.about {
+  max-width: 540px;
+}
+
+.about h2 {
+  margin-bottom: 0.75rem;
+}
+
+.about p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.about p em {
+  font-style: italic;
+}
+
+.about-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.about-feature {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.about-feature:last-child {
+  border-bottom: none;
+}
+
+.about-feature dt {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.about-feature dd {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}

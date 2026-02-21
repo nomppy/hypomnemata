@@ -11,6 +11,7 @@ export function KeyboardHelp({ onClose }) {
     { keys: ['2'], desc: 'Go to tags' },
     { keys: ['3'], desc: 'Go to meditate' },
     { keys: ['4'], desc: 'Go to settings' },
+    { keys: ['5'], desc: 'Go to about' },
     { keys: ['\u2318+\u21B5'], desc: 'Save entry' },
   ]
 
