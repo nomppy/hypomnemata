@@ -27,7 +27,12 @@ export function AuthProvider({ children }) {
   const signIn = useCallback(async (email) => {
     const supabase = getSupabase()
     if (!supabase) return { error: { message: 'Supabase not configured' } }
-    return supabase.auth.signInWithOtp({ email })
+    return supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: window.location.origin + '/hypomnemata/#/settings'
+      }
+    })
   }, [])
 
   const signOut = useCallback(async () => {
