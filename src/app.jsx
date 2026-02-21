@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'preact/hooks'
+import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
 import { getAllEntries, getEntriesByTag } from './db/operations.js'
 import { initSearch, search, addToIndex, removeFromIndex, updateInIndex } from './search/text.js'
 import { EntryCard } from './components/EntryCard.jsx'
@@ -21,6 +21,8 @@ export function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
 
+  const pendingFilterTag = useRef(null)
+
   const loadEntries = useCallback(async () => {
     let data
     if (filterTag) {
@@ -41,7 +43,12 @@ export function App() {
   useEffect(() => {
     const onHash = () => {
       setRoute(getRoute())
-      setFilterTag(null)
+      if (pendingFilterTag.current) {
+        setFilterTag(pendingFilterTag.current)
+        pendingFilterTag.current = null
+      } else {
+        setFilterTag(null)
+      }
       setSearchQuery('')
       setSearchResults(null)
       setShowForm(false)
@@ -103,6 +110,7 @@ export function App() {
     setFilterTag(tag)
     setRoute('/')
     if (getRoute() !== '/') {
+      pendingFilterTag.current = tag
       window.location.hash = '#/'
     }
   }

@@ -59,10 +59,7 @@ export function TagList({ onTagClick, onDataChange }) {
             ) : (
               <button
                 class="tag"
-                onClick={() => {
-                  onTagClick(tag.name)
-                  window.location.hash = '#/'
-                }}
+                onClick={() => onTagClick(tag.name)}
               >
                 #{tag.name}
               </button>
