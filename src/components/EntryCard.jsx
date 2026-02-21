@@ -1,10 +1,10 @@
 import { relativeDate } from '../utils/dates.js'
 import { stripTags } from '../utils/tags.js'
 
-export function EntryCard({ entry, onTagClick, onEdit }) {
+export function EntryCard({ entry, selected, onTagClick, onEdit }) {
   const displayText = entry.tags.length > 0 ? stripTags(entry.text) : entry.text
   return (
-    <div class="entry-card" onClick={() => onEdit(entry)}>
+    <div class={`entry-card${selected ? ' selected' : ''}`} onClick={() => onEdit(entry)}>
       <div class="entry-card-text">{displayText}</div>
       {entry.source && (
         <div class="entry-card-source">— {entry.source}</div>

@@ -7,6 +7,7 @@ import { SearchBar } from './components/SearchBar.jsx'
 import { TagList } from './components/TagList.jsx'
 import { Meditate } from './components/Meditate.jsx'
 import { Settings } from './components/Settings.jsx'
+import { KeyboardHelp } from './components/KeyboardHelp.jsx'
 
 function getRoute() {
   return window.location.hash.slice(1) || '/'
@@ -20,8 +21,11 @@ export function App() {
   const [editingEntry, setEditingEntry] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
+  const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [showHelp, setShowHelp] = useState(false)
 
   const pendingFilterTag = useRef(null)
+  const searchRef = useRef(null)
 
   const loadEntries = useCallback(async () => {
     let data
@@ -53,26 +57,115 @@ export function App() {
       setSearchResults(null)
       setShowForm(false)
       setEditingEntry(null)
+      setSelectedIndex(-1)
     }
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
+  const displayEntries = searchResults
+    ? entries.filter((e) => searchResults.has(e.id))
+    : entries
+
   useEffect(() => {
+    const isInput = () => {
+      const tag = document.activeElement?.tagName
+      return tag === 'INPUT' || tag === 'TEXTAREA'
+    }
+
     const onKey = (e) => {
-      if (e.key === 'n' && !e.metaKey && !e.ctrlKey && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+      // Help overlay
+      if (e.key === '?' && !isInput() && !showForm) {
         e.preventDefault()
+        setShowHelp((v) => !v)
+        return
+      }
+
+      // Close help / form on Escape
+      if (e.key === 'Escape') {
+        if (showHelp) { setShowHelp(false); return }
+        if (showForm) { setShowForm(false); setEditingEntry(null); return }
+        // If search is focused, blur it
+        if (document.activeElement === searchRef.current) {
+          searchRef.current.blur()
+          return
+        }
+        return
+      }
+
+      // Don't handle other shortcuts when help is open
+      if (showHelp) return
+
+      // Focus search: / or Cmd+K
+      if ((e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) && !isInput() && !showForm) {
+        e.preventDefault()
+        if (route !== '/') {
+          window.location.hash = '#/'
+        }
+        // Wait a tick for route change to render search bar
+        setTimeout(() => searchRef.current?.focus(), 0)
+        return
+      }
+
+      // Don't handle remaining shortcuts in input fields
+      if (isInput()) return
+      if (showForm) return
+
+      // New entry
+      if (e.key === 'n' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault()
+        if (route !== '/') window.location.hash = '#/'
         setShowForm(true)
         setEditingEntry(null)
+        return
       }
-      if (e.key === 'Escape') {
-        setShowForm(false)
-        setEditingEntry(null)
+
+      // Navigate tabs: 1-4
+      const navRoutes = ['/', '/tags', '/meditate', '/settings']
+      const num = parseInt(e.key)
+      if (num >= 1 && num <= 4 && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault()
+        window.location.hash = '#' + navRoutes[num - 1]
+        return
+      }
+
+      // Entry list navigation (only on entries view)
+      if (route === '/' && displayEntries.length > 0) {
+        if (e.key === 'j' || e.key === 'ArrowDown') {
+          e.preventDefault()
+          setSelectedIndex((i) => Math.min(i + 1, displayEntries.length - 1))
+          return
+        }
+        if (e.key === 'k' || e.key === 'ArrowUp') {
+          e.preventDefault()
+          setSelectedIndex((i) => Math.max(i - 1, 0))
+          return
+        }
+        if (e.key === 'Enter' && selectedIndex >= 0 && selectedIndex < displayEntries.length) {
+          e.preventDefault()
+          setEditingEntry(displayEntries[selectedIndex])
+          setShowForm(true)
+          return
+        }
       }
     }
+
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [showForm, showHelp, route, displayEntries, selectedIndex])
+
+  // Reset selection when entries change
+  useEffect(() => {
+    setSelectedIndex(-1)
+  }, [searchResults, filterTag])
+
+  // Scroll selected entry into view
+  useEffect(() => {
+    if (selectedIndex >= 0) {
+      const cards = document.querySelectorAll('.entry-card')
+      cards[selectedIndex]?.scrollIntoView({ block: 'nearest' })
+    }
+  }, [selectedIndex])
 
   const handleSearch = (query) => {
     setSearchQuery(query)
@@ -115,15 +208,11 @@ export function App() {
     }
   }
 
-  const displayEntries = searchResults
-    ? entries.filter((e) => searchResults.has(e.id))
-    : entries
-
   const navItems = [
-    { path: '/', label: 'entries' },
-    { path: '/tags', label: 'tags' },
-    { path: '/meditate', label: 'meditate' },
-    { path: '/settings', label: 'settings' },
+    { path: '/', label: 'entries', key: '1' },
+    { path: '/tags', label: 'tags', key: '2' },
+    { path: '/meditate', label: 'meditate', key: '3' },
+    { path: '/settings', label: 'settings', key: '4' },
   ]
 
   return (
@@ -149,7 +238,7 @@ export function App() {
 
       {route === '/' && (
         <div>
-          <SearchBar query={searchQuery} onSearch={handleSearch} />
+          <SearchBar query={searchQuery} onSearch={handleSearch} inputRef={searchRef} />
 
           {filterTag && (
             <div class="filter-bar">
@@ -183,10 +272,11 @@ export function App() {
             </div>
           )}
 
-          {displayEntries.map((entry) => (
+          {displayEntries.map((entry, i) => (
             <EntryCard
               key={entry.id}
               entry={entry}
+              selected={i === selectedIndex}
               onTagClick={handleTagClick}
               onEdit={handleEdit}
             />
@@ -207,6 +297,8 @@ export function App() {
       {route === '/meditate' && <Meditate />}
 
       {route === '/settings' && <Settings onDataChange={loadEntries} />}
+
+      {showHelp && <KeyboardHelp onClose={() => setShowHelp(false)} />}
     </div>
   )
 }

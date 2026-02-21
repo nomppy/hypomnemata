@@ -13,6 +13,11 @@
   border-color: var(--text-secondary);
 }
 
+.entry-card.selected {
+  border-color: var(--accent-slate);
+  box-shadow: 0 0 0 1px var(--accent-slate);
+}
+
 .entry-card-text {
   font-size: 1rem;
   line-height: 1.65;
@@ -421,4 +426,65 @@
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
+}
+
+/* Keyboard Help */
+.keyboard-help {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 1.5rem 2rem;
+  max-width: 380px;
+  width: 90%;
+}
+
+.keyboard-help h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.shortcut-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(209, 196, 169, 0.4);
+}
+
+.shortcut-row:last-child {
+  border-bottom: none;
+}
+
+.shortcut-row dt {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.shortcut-row dd {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.shortcut-or {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.15rem 0.4rem;
+  min-width: 1.4rem;
+  text-align: center;
+  display: inline-block;
 }
