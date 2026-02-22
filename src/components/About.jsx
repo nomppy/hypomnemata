@@ -85,6 +85,20 @@ export function About() {
           </dd>
         </div>
       </dl>
+
+      <div class="divider" />
+
+      <p style={{ fontSize: '0.85rem', color: 'var(--accent-slate)' }}>
+        <a
+          href="https://github.com/nomppy/hypomnemata"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>
+        {' · '}
+        <a href="mailto:feedback@sunken.site">Feedback</a>
+      </p>
     </div>
   )
 }
