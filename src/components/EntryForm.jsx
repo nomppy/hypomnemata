@@ -117,7 +117,6 @@ export function EntryForm({ entry, onSave, onCancel, onDelete }) {
       )}
 
       <div class="entry-form-actions">
-        <span class="hint">{'\u2318'}+Enter to save{onDelete ? `, ${'\u2318'}+\u232B to delete` : ''}</span>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           {onDelete && (
             <button
@@ -126,10 +125,11 @@ export function EntryForm({ entry, onSave, onCancel, onDelete }) {
               onClick={handleDeleteClick}
             >
               {showDeleteConfirm ? 'confirm delete' : 'delete'}
+              <span class="btn-hint">{'\u2318\u232B'}</span>
             </button>
           )}
-          <button onClick={onCancel}>cancel</button>
-          <button class="primary" onClick={handleSave}>save</button>
+          <button onClick={onCancel}>cancel <span class="btn-hint">esc</span></button>
+          <button class="primary" onClick={handleSave}>save <span class="btn-hint">{'\u2318\u21B5'}</span></button>
         </div>
       </div>
     </div>

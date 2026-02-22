@@ -40,7 +40,7 @@ try {
 
   // Check navigation links
   const navLinks = await page.$$('.app-header nav a')
-  assert(navLinks.length === 4, 'Four nav links present')
+  assert(navLinks.length === 5, 'Five nav links present')
 
   // --- Test adding an entry ---
   console.log('\n--- Adding entries ---')

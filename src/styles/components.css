@@ -116,10 +116,12 @@
   gap: 0.5rem;
 }
 
-.entry-form-actions .hint {
+.btn-hint {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   color: var(--text-secondary);
+  margin-left: 0.3rem;
+  opacity: 0.6;
 }
 
 .entry-form-tags {
