@@ -19,6 +19,14 @@ export function AuthProvider({ children }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      // After sign-in via magic link, redirect to the intended page
+      if (_event === 'SIGNED_IN') {
+        const redirect = sessionStorage.getItem('hypo:auth-redirect')
+        if (redirect) {
+          sessionStorage.removeItem('hypo:auth-redirect')
+          window.location.hash = '#' + redirect
+        }
+      }
     })
 
     return () => subscription.unsubscribe()

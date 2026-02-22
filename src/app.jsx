@@ -282,6 +282,7 @@ export function App() {
               class={route === item.path ? 'active' : ''}
             >
               {item.label}
+              {item.path === '/settings' && user && <span class="auth-dot" title={user.email} />}
             </a>
           ))}
         </nav>

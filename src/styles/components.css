@@ -599,6 +599,17 @@ kbd {
   color: var(--text-primary);
 }
 
+/* Auth indicator dot */
+.auth-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-olive, #6b7c5e);
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
 /* About */
 .about {
   max-width: 540px;
