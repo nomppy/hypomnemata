@@ -125,11 +125,11 @@ export function EntryForm({ entry, onSave, onCancel, onDelete }) {
               onClick={handleDeleteClick}
             >
               {showDeleteConfirm ? 'confirm delete' : 'delete'}
-              <span class="btn-hint">{'\u2318\u232B'}</span>
+              <span class="btn-hint">{navigator.platform?.includes('Mac') ? '⌘⌫' : 'Ctrl+Del'}</span>
             </button>
           )}
           <button onClick={onCancel}>cancel <span class="btn-hint">esc</span></button>
-          <button class="primary" onClick={handleSave}>save <span class="btn-hint">{'\u2318\u21B5'}</span></button>
+          <button class="primary" onClick={handleSave}>save <span class="btn-hint">{navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl+'}↩</span></button>
         </div>
       </div>
     </div>
