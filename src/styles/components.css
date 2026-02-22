@@ -124,6 +124,11 @@
   opacity: 0.6;
 }
 
+.primary .btn-hint {
+  color: inherit;
+  opacity: 0.5;
+}
+
 .entry-form-tags {
   display: flex;
   gap: 0.4rem;
