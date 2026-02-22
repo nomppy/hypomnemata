@@ -13,6 +13,7 @@ export function KeyboardHelp({ onClose }) {
     { keys: ['4'], desc: 'Go to settings' },
     { keys: ['5'], desc: 'Go to about' },
     { keys: ['\u2318+\u21B5'], desc: 'Save entry' },
+    { keys: ['\u2318+\u232B'], desc: 'Delete entry' },
   ]
 
   return (

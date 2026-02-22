@@ -398,6 +398,22 @@
   font-size: 0.9rem;
 }
 
+.empty-state-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1px;
+}
+
+.empty-state-link:hover {
+  color: var(--text-primary);
+  border-bottom-color: var(--text-secondary);
+}
+
 /* Confirm dialog */
 .confirm-overlay {
   position: fixed;

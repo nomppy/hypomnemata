@@ -8,6 +8,7 @@ export function EntryForm({ entry, onSave, onCancel, onDelete }) {
   const [showSource, setShowSource] = useState(!!entry?.source)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const textRef = useRef(null)
+  const sourceRef = useRef(null)
 
   useEffect(() => {
     if (textRef.current) {
@@ -55,6 +56,16 @@ export function EntryForm({ entry, onSave, onCancel, onDelete }) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault()
       handleSave()
+      return
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Backspace' && onDelete && entry) {
+      e.preventDefault()
+      if (!showDeleteConfirm) {
+        setShowDeleteConfirm(true)
+      } else {
+        handleDeleteClick()
+      }
+      return
     }
   }
 
@@ -89,6 +100,7 @@ export function EntryForm({ entry, onSave, onCancel, onDelete }) {
       {showSource ? (
         <div class="entry-form-source">
           <input
+            ref={sourceRef}
             type="text"
             value={source}
             onInput={(e) => setSource(e.target.value)}
@@ -96,13 +108,16 @@ export function EntryForm({ entry, onSave, onCancel, onDelete }) {
           />
         </div>
       ) : (
-        <button class="source-toggle" onClick={() => setShowSource(true)}>
+        <button class="source-toggle" onClick={() => {
+          setShowSource(true)
+          setTimeout(() => sourceRef.current?.focus(), 0)
+        }}>
           + add source
         </button>
       )}
 
       <div class="entry-form-actions">
-        <span class="hint">{'\u2318'}+Enter to save</span>
+        <span class="hint">{'\u2318'}+Enter to save{onDelete ? `, ${'\u2318'}+\u232B to delete` : ''}</span>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           {onDelete && (
             <button

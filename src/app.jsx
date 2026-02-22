@@ -330,6 +330,7 @@ export function App() {
             <div class="empty-state">
               <h3>Nothing here yet</h3>
               <p>Press <strong>n</strong> or tap + to begin collecting.</p>
+              <a href="#/about" class="empty-state-link">New here? Learn more</a>
             </div>
           )}
 

@@ -59,9 +59,11 @@ export function About() {
           </dd>
         </div>
         <div class="about-feature">
-          <dt>No account needed</dt>
+          <dt>Optional sync</dt>
           <dd>
-            No signup, no login, no tracking. Open the page and begin.
+            Sign in from <a href="#/settings">settings</a> to sync entries
+            across devices. Your data stays local-first — syncing is
+            optional, and everything works without an account.
           </dd>
         </div>
         <div class="about-feature">
@@ -88,6 +90,45 @@ export function About() {
 
       <div class="divider" />
 
+      <h2>Keyboard shortcuts</h2>
+
+      <p>
+        Press <kbd>?</kbd> anywhere to see all shortcuts. Here are the essentials:
+      </p>
+
+      <dl class="about-features">
+        <div class="about-feature">
+          <dt><kbd>n</kbd></dt>
+          <dd>Create a new entry</dd>
+        </div>
+        <div class="about-feature">
+          <dt><kbd>/</kbd></dt>
+          <dd>Focus search</dd>
+        </div>
+        <div class="about-feature">
+          <dt><kbd>j</kbd> / <kbd>k</kbd></dt>
+          <dd>Navigate entries, <kbd>Enter</kbd> to open</dd>
+        </div>
+        <div class="about-feature">
+          <dt><kbd>{'\u2318'}+Enter</kbd></dt>
+          <dd>Save entry</dd>
+        </div>
+        <div class="about-feature">
+          <dt><kbd>{'\u2318'}+Backspace</kbd></dt>
+          <dd>Delete entry (when editing)</dd>
+        </div>
+        <div class="about-feature">
+          <dt><kbd>Esc</kbd></dt>
+          <dd>Close form or blur search</dd>
+        </div>
+        <div class="about-feature">
+          <dt><kbd>1</kbd>–<kbd>5</kbd></dt>
+          <dd>Switch between tabs</dd>
+        </div>
+      </dl>
+
+      <div class="divider" />
+
       <p style={{ fontSize: '0.85rem', color: 'var(--accent-slate)' }}>
         <a
           href="https://github.com/nomppy/hypomnemata"
@@ -96,7 +137,7 @@ export function About() {
         >
           GitHub
         </a>
-        {' · '}
+        {' \u00b7 '}
         <a href="mailto:feedback@sunken.site">Feedback</a>
       </p>
     </div>
