@@ -2,6 +2,16 @@ import { getSupabase } from '../auth/supabase.js'
 import { db } from '../db/index.js'
 import { getEntryByRemoteId, updateRemoteId } from '../db/operations.js'
 
+let syncLock = false
+
+function normalizeSource(s) {
+  return (s || '').trim().replace(/\s+/g, ' ')
+}
+
+function contentKey(content, source) {
+  return `${(content || '').trim()}|||${normalizeSource(source)}`
+}
+
 function toRemote(entry, userId) {
   return {
     user_id: userId,
@@ -58,6 +68,16 @@ export async function deleteRemoteEntry(remoteId) {
 }
 
 export async function syncAll(userId) {
+  if (syncLock) return
+  syncLock = true
+  try {
+    await _syncAll(userId)
+  } finally {
+    syncLock = false
+  }
+}
+
+async function _syncAll(userId) {
   const supabase = getSupabase()
   if (!supabase || !userId) return
 
@@ -68,6 +88,16 @@ export async function syncAll(userId) {
   if (error) throw error
 
   const localEntries = await db.entries.toArray()
+
+  // Build a map of ALL remote entries by content key for dedup
+  const allRemoteByContent = new Map()
+  for (const r of remoteEntries) {
+    const key = contentKey(r.content, r.source)
+    // Keep the oldest by created_at if there are dupes
+    if (!allRemoteByContent.has(key) || r.created_at < allRemoteByContent.get(key).created_at) {
+      allRemoteByContent.set(key, r)
+    }
+  }
 
   const remoteById = new Map(remoteEntries.map((r) => [r.id, r]))
   const localByRemoteId = new Map()
@@ -110,25 +140,75 @@ export async function syncAll(userId) {
     }
   }
 
-  // 2. Local entries without remoteId: dedupe by content+source, or push
+  // 2. Local entries without remoteId: dedupe against ALL remotes by content+source, or push
   for (const local of localWithoutRemote) {
-    let matched = false
-    for (const [remoteId, remote] of remoteById) {
-      if (remote.content === local.text && (remote.source || '') === (local.source || '')) {
-        // Link them
-        await updateRemoteId(local.id, remoteId)
-        remoteById.delete(remoteId)
-        matched = true
-        break
-      }
-    }
-    if (!matched) {
+    const key = contentKey(local.text, local.source)
+    const matchedRemote = allRemoteByContent.get(key)
+    if (matchedRemote) {
+      // Link them
+      await updateRemoteId(local.id, matchedRemote.id)
+      remoteById.delete(matchedRemote.id)
+    } else {
       await pushEntry(local, userId)
     }
   }
 
-  // 3. Remote-only entries: insert into Dexie
+  // 3. Remote-only entries: insert into Dexie (only if no local with same content exists)
   for (const [, remote] of remoteById) {
-    await db.entries.add(toLocal(remote))
+    const key = contentKey(remote.content, remote.source)
+    const existing = await db.entries.filter(
+      (e) => contentKey(e.text, e.source) === key
+    ).first()
+    if (!existing) {
+      await db.entries.add(toLocal(remote))
+    } else if (!existing.remoteId) {
+      // Local exists but isn't linked — link it
+      await updateRemoteId(existing.id, remote.id)
+    }
   }
+}
+
+export async function deduplicateRemote(userId) {
+  const supabase = getSupabase()
+  if (!supabase || !userId) return { removed: 0 }
+
+  const { data: remoteEntries, error } = await supabase
+    .from('entries')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: true })
+  if (error) throw error
+
+  const seen = new Map()
+  const dupeIds = []
+
+  for (const r of remoteEntries) {
+    const key = contentKey(r.content, r.source)
+    if (seen.has(key)) {
+      dupeIds.push(r.id)
+    } else {
+      seen.set(key, r)
+    }
+  }
+
+  if (dupeIds.length > 0) {
+    // Also unlink any local entries pointing to the dupes
+    for (const dupeId of dupeIds) {
+      const local = await db.entries.where('remoteId').equals(dupeId).first()
+      if (local) {
+        const canonical = seen.get(contentKey(local.text, local.source))
+        if (canonical) {
+          await updateRemoteId(local.id, canonical.id)
+        }
+      }
+    }
+
+    const { error: delError } = await supabase
+      .from('entries')
+      .delete()
+      .in('id', dupeIds)
+    if (delError) throw delError
+  }
+
+  return { removed: dupeIds.length }
 }

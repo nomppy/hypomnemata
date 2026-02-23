@@ -1,5 +1,6 @@
 import { useState, useRef } from 'preact/hooks'
 import { exportData, importData, clearAllData } from '../db/operations.js'
+import { deduplicateRemote } from '../sync/engine.js'
 import { AuthSection } from './AuthSection.jsx'
 import { useAuth } from '../auth/context.jsx'
 
@@ -70,6 +71,22 @@ export function Settings({ onDataChange }) {
           style={{ fontSize: '0.85rem' }}
         />
       </div>
+
+      {user && (
+        <div class="settings-section">
+          <h3>Deduplicate Synced Entries</h3>
+          <p>Remove duplicate entries from the sync server (keeps the oldest copy of each).</p>
+          <button onClick={async () => {
+            try {
+              const { removed } = await deduplicateRemote(user.id)
+              setMessage(removed > 0 ? `Removed ${removed} duplicate(s).` : 'No duplicates found.')
+              if (removed > 0) onDataChange()
+            } catch (err) {
+              setMessage(`Dedup failed: ${err.message}`)
+            }
+          }}>Deduplicate</button>
+        </div>
+      )}
 
       <div class="settings-section">
         <h3>Clear All Data</h3>

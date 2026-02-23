@@ -622,6 +622,50 @@ kbd {
   color: var(--text-primary);
 }
 
+/* PWA Install Hint */
+.pwa-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  background: rgba(94, 109, 120, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.pwa-hint-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pwa-hint-detail {
+  font-size: 0.65rem;
+  opacity: 0.7;
+}
+
+.pwa-hint-dismiss {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pwa-hint-dismiss:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
 /* Auth indicator dot */
 .auth-dot {
   display: inline-block;

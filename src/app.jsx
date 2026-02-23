@@ -41,6 +41,17 @@ export function App() {
     localStorage.setItem('hypo:sync-hint-dismissed', '1')
     setSyncHintDismissed(true)
   }
+
+  const [pwaHintDismissed, setPwaHintDismissed] = useState(
+    () => localStorage.getItem('hypo:pwa-hint-dismissed') === '1',
+  )
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone
+  const showPwaHint = isIOS && !isStandalone && !pwaHintDismissed
+  const dismissPwaHint = () => {
+    localStorage.setItem('hypo:pwa-hint-dismissed', '1')
+    setPwaHintDismissed(true)
+  }
   const syncStatus = useSyncStatus()
 
   const runSync = useCallback(async () => {
@@ -294,6 +305,16 @@ export function App() {
         <div class="sync-hint">
           <a href="#/settings">Sign in to sync entries across devices</a>
           <button class="sync-hint-dismiss" onClick={dismissSyncHint} aria-label="Dismiss">&times;</button>
+        </div>
+      )}
+
+      {showPwaHint && (
+        <div class="pwa-hint">
+          <div class="pwa-hint-text">
+            <span>Add to your Home Screen for the best experience.</span>
+            <span class="pwa-hint-detail">Tap the share button, then "Add to Home Screen"</span>
+          </div>
+          <button class="pwa-hint-dismiss" onClick={dismissPwaHint}>Got it</button>
         </div>
       )}
 
