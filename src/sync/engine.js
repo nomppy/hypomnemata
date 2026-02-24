@@ -8,8 +8,16 @@ function normalizeSource(s) {
   return (s || '').trim().replace(/\s+/g, ' ')
 }
 
+function stripInlineTags(text) {
+  return (text || '')
+    .replace(/#[a-zA-Z0-9_-]+/g, '')  // #hashtags
+    .replace(/\[.*?\]/g, '')           // [bracket tags]
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 function contentKey(content, source) {
-  return `${(content || '').trim()}|||${normalizeSource(source)}`
+  return `${stripInlineTags(content)}|||${normalizeSource(source)}`
 }
 
 function toRemote(entry, userId) {
@@ -166,6 +174,41 @@ async function _syncAll(userId) {
       await updateRemoteId(existing.id, remote.id)
     }
   }
+
+  // 4. Auto-deduplicate remote after sync
+  await deduplicateRemote(userId)
+
+  // 5. Deduplicate local entries (merge by content, keep one with remoteId)
+  await deduplicateLocal()
+}
+
+export async function deduplicateLocal() {
+  const entries = await db.entries.toArray()
+  const seen = new Map() // contentKey -> entry (prefer one with remoteId)
+  const dupeIds = []
+
+  for (const entry of entries) {
+    const key = contentKey(entry.text, entry.source)
+    const existing = seen.get(key)
+    if (!existing) {
+      seen.set(key, entry)
+    } else {
+      // Keep the one with remoteId, or the older one
+      if (entry.remoteId && !existing.remoteId) {
+        dupeIds.push(existing.id)
+        seen.set(key, entry)
+      } else {
+        dupeIds.push(entry.id)
+      }
+    }
+  }
+
+  for (const id of dupeIds) {
+    await db.entries.delete(id)
+    await db.embeddings.delete(id).catch(() => {})
+  }
+
+  return { removed: dupeIds.length }
 }
 
 export async function deduplicateRemote(userId) {

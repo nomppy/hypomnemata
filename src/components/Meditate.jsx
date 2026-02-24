@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'preact/hooks'
+import { useState, useEffect, useCallback } from 'preact/hooks'
 import { getRandomEntry } from '../db/operations.js'
 import { relativeDate } from '../utils/dates.js'
 import { stripTags } from '../utils/tags.js'
@@ -16,17 +16,31 @@ export function Meditate() {
   const [prompt, setPrompt] = useState('')
   const [loading, setLoading] = useState(true)
 
-  const draw = async (excludeId) => {
+  const draw = useCallback(async (excludeId) => {
     setLoading(true)
     const e = await getRandomEntry(excludeId)
     setEntry(e)
     setPrompt(PROMPTS[Math.floor(Math.random() * PROMPTS.length)])
     setLoading(false)
-  }
+  }, [])
 
   useEffect(() => {
     draw()
-  }, [])
+  }, [draw])
+
+  // Keyboard: Space or Enter draws another
+  useEffect(() => {
+    const onKey = (e) => {
+      const tag = document.activeElement?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault()
+        if (entry) draw(entry.id)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [entry, draw])
 
   if (loading) return null
 
@@ -52,6 +66,7 @@ export function Meditate() {
 
       <div class="meditate-actions">
         <button onClick={() => draw(entry.id)}>draw another</button>
+        <span class="meditate-hint">Space or Enter</span>
       </div>
     </div>
   )

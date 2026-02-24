@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks'
-import { getAllEntries, getEntriesByTag, getEntry } from './db/operations.js'
+import { getAllEntries, getEntriesByTag, getEntry, getAllTags } from './db/operations.js'
 import { initSearch, search, addToIndex, removeFromIndex, updateInIndex } from './search/text.js'
 import { EntryCard } from './components/EntryCard.jsx'
 import { EntryForm } from './components/EntryForm.jsx'
@@ -27,6 +27,7 @@ export function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [tags, setTags] = useState([])
   const [showHelp, setShowHelp] = useState(false)
   const [showInstallGuide, setShowInstallGuide] = useState(false)
 
@@ -83,6 +84,13 @@ export function App() {
   useEffect(() => {
     loadEntries()
   }, [loadEntries])
+
+  // Load tags when on tags route
+  useEffect(() => {
+    if (route === '/tags') {
+      getAllTags().then(setTags)
+    }
+  }, [route])
 
   // Sync on sign-in and on coming back online, then reload entries
   useEffect(() => {
@@ -196,8 +204,33 @@ export function App() {
         }
         if (e.key === 'Enter' && selectedIndex >= 0 && selectedIndex < displayEntries.length) {
           e.preventDefault()
-          setEditingEntry(displayEntries[selectedIndex])
-          setShowForm(true)
+          const target = displayEntries[selectedIndex]
+          // Look up fresh entry by id to avoid stale data
+          getEntry(target.id).then((fresh) => {
+            if (fresh) {
+              setEditingEntry(fresh)
+              setShowForm(true)
+            }
+          })
+          return
+        }
+      }
+
+      // Tag list navigation
+      if (route === '/tags' && tags.length > 0) {
+        if (e.key === 'j' || e.key === 'ArrowDown') {
+          e.preventDefault()
+          setSelectedIndex((i) => Math.min(i + 1, tags.length - 1))
+          return
+        }
+        if (e.key === 'k' || e.key === 'ArrowUp') {
+          e.preventDefault()
+          setSelectedIndex((i) => Math.max(i - 1, 0))
+          return
+        }
+        if (e.key === 'Enter' && selectedIndex >= 0 && selectedIndex < tags.length) {
+          e.preventDefault()
+          handleTagClick(tags[selectedIndex].name)
           return
         }
       }
@@ -205,7 +238,7 @@ export function App() {
 
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [showForm, showHelp, route, displayEntries, selectedIndex])
+  }, [showForm, showHelp, route, displayEntries, tags, selectedIndex])
 
   // Reset selection when entries change
   useEffect(() => {
@@ -238,12 +271,14 @@ export function App() {
     }
     setShowForm(false)
     setEditingEntry(null)
-    await loadEntries()
-    // Fire-and-forget remote push
+    // Push to remote BEFORE reloading entries to prevent sync race
     if (user) {
       const fresh = await getEntry(entry.id)
-      if (fresh) pushEntry(fresh, user.id).catch(() => {})
+      if (fresh) {
+        try { await pushEntry(fresh, user.id) } catch {}
+      }
     }
+    await loadEntries()
   }
 
   const handleDelete = async (id, remoteId) => {
@@ -384,7 +419,7 @@ export function App() {
       )}
 
       {route === '/tags' && (
-        <TagList onTagClick={handleTagClick} onDataChange={loadEntries} />
+        <TagList onTagClick={handleTagClick} onDataChange={() => { loadEntries(); getAllTags().then(setTags) }} selectedIndex={selectedIndex} />
       )}
 
       {route === '/meditate' && <Meditate />}

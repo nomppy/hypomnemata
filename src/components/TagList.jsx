@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'preact/hooks'
 import { getAllTags, renameTag } from '../db/operations.js'
 
-export function TagList({ onTagClick, onDataChange }) {
+export function TagList({ onTagClick, onDataChange, selectedIndex }) {
   const [tags, setTags] = useState([])
   const [renamingTag, setRenamingTag] = useState(null)
   const [newName, setNewName] = useState('')
@@ -14,6 +14,14 @@ export function TagList({ onTagClick, onDataChange }) {
   useEffect(() => {
     loadTags()
   }, [])
+
+  // Scroll selected tag into view
+  useEffect(() => {
+    if (selectedIndex >= 0) {
+      const rows = document.querySelectorAll('.tag-management-row')
+      rows[selectedIndex]?.scrollIntoView({ block: 'nearest' })
+    }
+  }, [selectedIndex])
 
   const handleRename = async (oldName) => {
     const trimmed = newName.trim().toLowerCase()
@@ -41,8 +49,8 @@ export function TagList({ onTagClick, onDataChange }) {
       )}
 
       <div class="tag-management">
-        {tags.map((tag) => (
-          <div key={tag.name} class="tag-management-row">
+        {tags.map((tag, i) => (
+          <div key={tag.name} class={`tag-management-row${i === selectedIndex ? ' selected' : ''}`}>
             {renamingTag === tag.name ? (
               <input
                 type="text"

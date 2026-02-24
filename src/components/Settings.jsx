@@ -1,6 +1,6 @@
 import { useState, useRef } from 'preact/hooks'
 import { exportData, importData, deleteAllData } from '../db/operations.js'
-import { deduplicateRemote } from '../sync/engine.js'
+import { deduplicateRemote, deduplicateLocal } from '../sync/engine.js'
 import { AuthSection } from './AuthSection.jsx'
 import { useAuth } from '../auth/context.jsx'
 import { getSupabase } from '../auth/supabase.js'
@@ -68,7 +68,7 @@ export function Settings({ onDataChange }) {
 
       <div class="settings-section">
         <h3>Import Data</h3>
-        <p>Import entries from a previously exported JSON file. This replaces all current data.</p>
+        <p>Import entries from a previously exported JSON file. Duplicates are skipped automatically.</p>
         <input
           ref={fileRef}
           type="file"
@@ -78,21 +78,25 @@ export function Settings({ onDataChange }) {
         />
       </div>
 
-      {user && (
-        <div class="settings-section">
-          <h3>Deduplicate Synced Entries</h3>
-          <p>Remove duplicate entries from the sync server (keeps the oldest copy of each).</p>
-          <button onClick={async () => {
-            try {
+      <div class="settings-section">
+        <h3>Deduplicate Entries</h3>
+        <p>Remove duplicate entries{user ? ' locally and from the sync server' : ''}. Keeps the oldest copy of each.</p>
+        <button onClick={async () => {
+          try {
+            let totalRemoved = 0
+            if (user) {
               const { removed } = await deduplicateRemote(user.id)
-              setMessage(removed > 0 ? `Removed ${removed} duplicate(s).` : 'No duplicates found.')
-              if (removed > 0) onDataChange()
-            } catch (err) {
-              setMessage(`Dedup failed: ${err.message}`)
+              totalRemoved += removed
             }
-          }}>Deduplicate</button>
-        </div>
-      )}
+            const { removed: localRemoved } = await deduplicateLocal()
+            totalRemoved += localRemoved
+            setMessage(totalRemoved > 0 ? `Removed ${totalRemoved} duplicate(s).` : 'No duplicates found.')
+            if (totalRemoved > 0) onDataChange()
+          } catch (err) {
+            setMessage(`Dedup failed: ${err.message}`)
+          }
+        }}>Deduplicate</button>
+      </div>
 
       <div class="settings-section">
         <h3>Delete All My Data</h3>

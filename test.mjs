@@ -22,7 +22,7 @@ try {
   await page.goto('http://localhost:5173/hypomnemata/#/settings')
   await page.waitForSelector('.app-header')
   await page.waitForTimeout(300)
-  const clearBtn = await page.$('button:text("Clear all data")')
+  const clearBtn = await page.$('button:text("Delete all my data")')
   if (clearBtn) {
     await clearBtn.click()
     await page.waitForTimeout(100)
@@ -256,7 +256,7 @@ try {
   await page.waitForTimeout(200)
 
   // Clear all data first
-  await page.click('button:text("Clear all data")')
+  await page.click('button:text("Delete all my data")')
   await page.waitForTimeout(100)
   await page.click('button:text("Click again to confirm")')
   await page.waitForTimeout(300)

@@ -80,14 +80,39 @@ export async function exportData() {
   return JSON.stringify({ version: 1, entries, exportedAt: new Date().toISOString() }, null, 2)
 }
 
+function importContentKey(entry) {
+  const text = (entry.text || entry.content || '')
+    .replace(/#[a-zA-Z0-9_-]+/g, '')
+    .replace(/\[.*?\]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+  const source = (entry.source || '').trim().replace(/\s+/g, ' ')
+  return `${text}|||${source}`
+}
+
 export async function importData(json) {
   const data = JSON.parse(json)
   if (!data.entries || !Array.isArray(data.entries)) {
     throw new Error('Invalid import data')
   }
-  await db.entries.clear()
-  await db.entries.bulkAdd(data.entries)
-  return data.entries.length
+
+  // Build content keys for existing entries to avoid duplicates
+  const existing = await db.entries.toArray()
+  const existingKeys = new Set(existing.map(e => importContentKey(e)))
+
+  let added = 0
+  for (const entry of data.entries) {
+    const key = importContentKey(entry)
+    if (!existingKeys.has(key)) {
+      // Strip id/remoteId from imported entries to avoid conflicts
+      const { id, remoteId, ...clean } = entry
+      await db.entries.add(clean)
+      existingKeys.add(key)
+      added++
+    }
+  }
+
+  return added
 }
 
 export async function getEntryByRemoteId(remoteId) {
