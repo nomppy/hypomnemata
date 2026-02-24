@@ -723,3 +723,90 @@ kbd {
   color: var(--text-secondary);
   line-height: 1.5;
 }
+
+/* Safari Auth Relay Banner */
+.safari-relay-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  background: rgba(90, 154, 104, 0.1);
+  border: 1px solid rgba(90, 154, 104, 0.3);
+  border-radius: 2px;
+  padding: 0.6rem 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.safari-relay-text strong {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+/* Install Guide Modal */
+.install-guide {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 1.5rem 2rem;
+  max-width: 420px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.install-guide h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.install-guide-section {
+  margin-bottom: 1.25rem;
+}
+
+.install-guide-section h4 {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.install-steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 0;
+}
+
+.install-steps li {
+  counter-increment: step;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.install-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-slate);
+  background: rgba(94, 109, 120, 0.08);
+  width: 1.1rem;
+  height: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  top: 0.2rem;
+}
+
+.install-icon {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: var(--accent-slate);
+}

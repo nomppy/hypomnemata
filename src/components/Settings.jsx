@@ -1,8 +1,9 @@
 import { useState, useRef } from 'preact/hooks'
-import { exportData, importData, clearAllData } from '../db/operations.js'
+import { exportData, importData, deleteAllData } from '../db/operations.js'
 import { deduplicateRemote } from '../sync/engine.js'
 import { AuthSection } from './AuthSection.jsx'
 import { useAuth } from '../auth/context.jsx'
+import { getSupabase } from '../auth/supabase.js'
 
 export function Settings({ onDataChange }) {
   const [message, setMessage] = useState('')
@@ -41,10 +42,15 @@ export function Settings({ onDataChange }) {
       setShowClearConfirm(true)
       return
     }
-    await clearAllData()
-    setShowClearConfirm(false)
-    setMessage('All data cleared.')
-    onDataChange()
+    try {
+      await deleteAllData(getSupabase(), user?.id)
+      setShowClearConfirm(false)
+      setMessage(user ? 'All data deleted (local and synced).' : 'All data deleted.')
+      onDataChange()
+    } catch (err) {
+      setMessage(`Delete failed: ${err.message}`)
+      setShowClearConfirm(false)
+    }
   }
 
   return (
@@ -89,14 +95,13 @@ export function Settings({ onDataChange }) {
       )}
 
       <div class="settings-section">
-        <h3>Clear All Data</h3>
-        <p>Permanently delete all entries. This cannot be undone.</p>
-        {user && <p style={{ color: 'var(--accent-red)', fontSize: '0.8rem' }}>This only clears local data. Synced entries will reappear on next sync. Sign out first to fully disconnect.</p>}
+        <h3>Delete All My Data</h3>
+        <p>Permanently delete all entries{user ? ' — both local and synced' : ''}. This cannot be undone.</p>
         <button
           class="danger"
           onClick={handleClear}
         >
-          {showClearConfirm ? 'Click again to confirm' : 'Clear all data'}
+          {showClearConfirm ? 'Click again to confirm' : 'Delete all my data'}
         </button>
       </div>
 

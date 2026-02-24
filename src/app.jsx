@@ -28,11 +28,12 @@ export function App() {
   const [searchResults, setSearchResults] = useState(null)
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [showHelp, setShowHelp] = useState(false)
+  const [showInstallGuide, setShowInstallGuide] = useState(false)
 
   const pendingFilterTag = useRef(null)
   const searchRef = useRef(null)
 
-  const { user, configured } = useAuth()
+  const { user, configured, showSafariRelay, dismissSafariRelay } = useAuth()
   const [syncHintDismissed, setSyncHintDismissed] = useState(
     () => localStorage.getItem('hypo:sync-hint-dismissed') === '1',
   )
@@ -308,13 +309,22 @@ export function App() {
         </div>
       )}
 
+      {showSafariRelay && (
+        <div class="safari-relay-banner">
+          <div class="safari-relay-text">
+            <strong>Signed in!</strong> Open Hypomnēmata from your home screen to continue.
+          </div>
+          <button class="sync-hint-dismiss" onClick={dismissSafariRelay} aria-label="Dismiss">&times;</button>
+        </div>
+      )}
+
       {showPwaHint && (
-        <div class="pwa-hint">
+        <div class="pwa-hint" onClick={() => setShowInstallGuide(true)} style={{ cursor: 'pointer' }}>
           <div class="pwa-hint-text">
             <span>Add to your Home Screen for the best experience.</span>
-            <span class="pwa-hint-detail">Tap the share button, then "Add to Home Screen"</span>
+            <span class="pwa-hint-detail">Tap for step-by-step instructions</span>
           </div>
-          <button class="pwa-hint-dismiss" onClick={dismissPwaHint}>Got it</button>
+          <button class="pwa-hint-dismiss" onClick={(e) => { e.stopPropagation(); dismissPwaHint() }}>Dismiss</button>
         </div>
       )}
 
@@ -384,6 +394,45 @@ export function App() {
       {route === '/about' && <About />}
 
       {showHelp && <KeyboardHelp onClose={() => setShowHelp(false)} />}
+
+      {showInstallGuide && (
+        <div class="confirm-overlay" onClick={() => setShowInstallGuide(false)}>
+          <div class="install-guide" onClick={(e) => e.stopPropagation()}>
+            <h3>Install as an app</h3>
+            <div class="divider" />
+
+            <div class="install-guide-section">
+              <h4>iPhone / iPad (Safari)</h4>
+              <ol class="install-steps">
+                <li>Tap the <strong>Share</strong> button <span class="install-icon">&#xFEFF;↑</span></li>
+                <li>Scroll down and tap <strong>Add to Home Screen</strong></li>
+                <li>Tap <strong>Add</strong> in the top right</li>
+              </ol>
+            </div>
+
+            <div class="install-guide-section">
+              <h4>Android (Chrome)</h4>
+              <ol class="install-steps">
+                <li>Tap the <strong>menu</strong> button (three dots)</li>
+                <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong></li>
+                <li>Confirm by tapping <strong>Install</strong></li>
+              </ol>
+            </div>
+
+            <div class="install-guide-section">
+              <h4>Desktop (Chrome / Edge)</h4>
+              <ol class="install-steps">
+                <li>Click the <strong>install icon</strong> in the address bar</li>
+                <li>Or go to Menu → <strong>Install Hypomnēmata</strong></li>
+              </ol>
+            </div>
+
+            <div style={{ marginTop: '1rem', textAlign: 'right' }}>
+              <button onClick={() => setShowInstallGuide(false)}>close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

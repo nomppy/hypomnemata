@@ -90,6 +90,37 @@ export function About() {
 
       <div class="divider" />
 
+      <h2>Use as an app</h2>
+
+      <p>
+        Hypomnēmata works as a full app on your phone or computer — no app
+        store needed. Once installed, it launches instantly and works offline.
+      </p>
+
+      <dl class="about-features">
+        <div class="about-feature">
+          <dt>iPhone / iPad</dt>
+          <dd>
+            In Safari, tap Share → Add to Home Screen → Add.
+          </dd>
+        </div>
+        <div class="about-feature">
+          <dt>Android</dt>
+          <dd>
+            In Chrome, tap Menu → Install app (or Add to Home screen).
+          </dd>
+        </div>
+        <div class="about-feature">
+          <dt>Desktop</dt>
+          <dd>
+            In Chrome or Edge, click the install icon in the address bar,
+            or go to Menu → Install Hypomnēmata.
+          </dd>
+        </div>
+      </dl>
+
+      <div class="divider" />
+
       <h2>Keyboard shortcuts</h2>
 
       <p>

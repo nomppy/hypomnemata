@@ -102,3 +102,13 @@ export async function clearAllData() {
   await db.entries.clear()
   await db.embeddings.clear().catch(() => {})
 }
+
+export async function deleteAllData(supabase, userId) {
+  // Delete remote data first if signed in
+  if (supabase && userId) {
+    await supabase.from('entries').delete().eq('user_id', userId)
+  }
+  // Then clear local
+  await db.entries.clear()
+  await db.embeddings.clear().catch(() => {})
+}

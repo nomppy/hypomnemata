@@ -35,6 +35,7 @@ function clearSessionCookie() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(supabaseConfigured)
+  const [showSafariRelay, setShowSafariRelay] = useState(false)
 
   useEffect(() => {
     const supabase = getSupabase()
@@ -68,6 +69,7 @@ export function AuthProvider({ children }) {
         // If in Safari (not PWA), relay session via cookie for the PWA to pick up
         if (!isStandalone && session) {
           setSessionCookie(session)
+          setShowSafariRelay(true)
         }
         const redirect = sessionStorage.getItem('hypo:auth-redirect')
         if (redirect) {
@@ -98,7 +100,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, loading, configured: supabaseConfigured }}>
+    <AuthContext.Provider value={{ user, signIn, signOut, loading, configured: supabaseConfigured, showSafariRelay, dismissSafariRelay: () => setShowSafariRelay(false) }}>
       {children}
     </AuthContext.Provider>
   )
