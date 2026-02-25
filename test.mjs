@@ -161,7 +161,7 @@ try {
   await page.click('a[href="#/meditate"]')
   await page.waitForTimeout(200)
 
-  const meditateText = await page.$('.meditate-entry .text')
+  const meditateText = await page.$('.meditate-quote')
   assert(meditateText !== null, 'Meditate view shows an entry')
 
   const meditatePrompt = await page.$('.meditate-prompt')
@@ -454,7 +454,7 @@ try {
 
   const texts = new Set()
   for (let i = 0; i < 10; i++) {
-    const t = await page.textContent('.meditate-entry .text')
+    const t = await page.textContent('.meditate-quote')
     texts.add(t)
     await page.click('button:text("draw another")')
     await page.waitForTimeout(200)

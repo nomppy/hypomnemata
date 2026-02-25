@@ -48,6 +48,15 @@ src/
     dates.js            — relative date formatting
 ```
 
-## Deployment
+## Sync Engine (src/sync/engine.js)
+- Supabase for remote storage, Dexie (IndexedDB) for local
+- Auth: Supabase magic link (kennett.sun@gmail.com)
+- contentKey = text + source for dedup
+- syncAll: linked entries → last-write-wins; unlinked → content match or push; remote-only → pull
+- Race condition risk: background sync can overwrite local edits before pushEntry completes
 
-Built for GitHub Pages with base path `/hypomnemata/`. Deployed via GitHub Actions.
+## Deployment
+- **Target:** Cloudflare Pages (auto-deploys on push to main)
+- Repo: nomppy/hypomnemata
+- Domain: hypo.sunken.site
+- Preview URLs: {hash}.hypomnemata.pages.dev

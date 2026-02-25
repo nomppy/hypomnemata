@@ -11,8 +11,9 @@ import { KeyboardHelp } from './components/KeyboardHelp.jsx'
 import { About } from './components/About.jsx'
 import { SyncIndicator } from './components/SyncIndicator.jsx'
 import { useAuth } from './auth/context.jsx'
-import { syncAll, pushEntry, deleteRemoteEntry } from './sync/engine.js'
+import { syncAll, pushEntry, deleteRemoteEntry, deduplicateLocal, deduplicateRemote } from './sync/engine.js'
 import { useSyncStatus } from './sync/status.js'
+import { runBracketTagMigration } from './db/migrations.js'
 
 function getRoute() {
   return window.location.hash.slice(1) || '/'
@@ -91,6 +92,19 @@ export function App() {
       getAllTags().then(setTags)
     }
   }, [route])
+
+  // Run one-time migrations on app load, then dedup
+  useEffect(() => {
+    const migrate = async () => {
+      const migrated = await runBracketTagMigration(user?.id)
+      if (migrated > 0) {
+        await deduplicateLocal()
+        if (user) await deduplicateRemote(user.id).catch(() => {})
+        loadEntries()
+      }
+    }
+    migrate()
+  }, [user])
 
   // Sync on sign-in and on coming back online, then reload entries
   useEffect(() => {
