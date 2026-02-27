@@ -292,12 +292,6 @@
   opacity: 0.7;
 }
 
-.meditate-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
 .meditate-draw {
   font-family: var(--font-mono);
   font-size: 0.7rem;

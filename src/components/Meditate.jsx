@@ -13,28 +13,23 @@ const PROMPTS = [
   'Notice what surfaces.',
 ]
 
-// Session-level persistence so navigating away and back keeps the same quote
-let sessionEntry = null
-let sessionPrompt = ''
-
 export function Meditate() {
-  const [entry, setEntry] = useState(sessionEntry)
-  const [prompt, setPrompt] = useState(sessionPrompt)
-  const [loading, setLoading] = useState(!sessionEntry)
+  const [entry, setEntry] = useState(null)
+  const [prompt, setPrompt] = useState('')
+  const [loading, setLoading] = useState(true)
 
   const draw = useCallback(async (excludeId) => {
     setLoading(true)
     const e = await getRandomEntry(excludeId)
     const p = PROMPTS[Math.floor(Math.random() * PROMPTS.length)]
-    sessionEntry = e
-    sessionPrompt = p
     setEntry(e)
     setPrompt(p)
     setLoading(false)
   }, [])
 
+  // Draw a fresh card every time the component mounts
   useEffect(() => {
-    if (!sessionEntry) draw()
+    draw()
   }, [draw])
 
   // Keyboard: Space or Enter draws another
@@ -76,11 +71,9 @@ export function Meditate() {
 
       <div class="meditate-footer">
         <p class="meditate-prompt">{prompt}</p>
-        <div class="meditate-controls">
-          <button class="meditate-draw" onClick={() => draw(entry.id)}>
-            draw another
-          </button>
-        </div>
+        <button class="meditate-draw" onClick={() => draw(entry.id)}>
+          draw another
+        </button>
         <span class="meditate-date">{relativeDate(entry.createdAt)}</span>
       </div>
     </div>
